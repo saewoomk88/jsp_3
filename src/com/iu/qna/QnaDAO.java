@@ -7,6 +7,7 @@ import com.iu.board.BoardDTO;
 import com.iu.board.BoardReply;
 import com.iu.board.BoardReplyDTO;
 import com.iu.page.RowNumber;
+import com.iu.page.Search;
 
 public class QnaDAO implements BoardDAO, BoardReply {
 	
@@ -53,7 +54,7 @@ public class QnaDAO implements BoardDAO, BoardReply {
 	}
 
 	@Override
-	public int getCount(String kind, String search) throws Exception {
+	public int getCount(Search	search) throws Exception {
 		// TODO Auto-generated method stub
 		return 0;
 	}

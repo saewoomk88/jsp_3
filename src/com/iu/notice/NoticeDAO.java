@@ -9,6 +9,7 @@ import java.util.List;
 import com.iu.board.BoardDAO;
 import com.iu.board.BoardDTO;
 import com.iu.page.RowNumber;
+import com.iu.page.Search;
 import com.iu.util.DBControl;
 import com.oreilly.servlet.MultipartRequest;
 
@@ -114,12 +115,12 @@ public class NoticeDAO implements BoardDAO{
 	}
 
 	@Override
-	public int getCount(String kind, String search) throws Exception {
+	public int getCount(Search search) throws Exception {
 		Connection con = DBControl.getconnect();
 		String sql = "select count(num) from notice "
-				+ "where "+kind+" like ?";
+				+ "where "+search.getKind()+" like ?";
 		PreparedStatement st = con.prepareStatement(sql);
-		st.setString(1, "%"+search+"%");
+		st.setString(1, "%"+search.getSearch()+"%");
 		ResultSet rs = st.executeQuery();
 		rs.next();
 		int result = rs.getInt(1);
