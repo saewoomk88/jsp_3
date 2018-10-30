@@ -6,12 +6,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
-    <%
-    	BoardDTO boardDTO=(BoardDTO)request.getAttribute("dto");
-    	List<FileDTO>ar = (List<FileDTO>)request.getAttribute("files");
-    	String board = (String)request.getAttribute("board");
     
-    %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,20 +18,20 @@
 <jsp:include page="../../../temp/header.jsp"></jsp:include>
 <div class="container-fluid">
 	<div class="row"></div>
-	<h1><%=board %>View</h1>
-	<h1>Title : <%=boardDTO.getTitle() %></h1>
-	<h1>Writer : <%=boardDTO.getWriter() %></h1>
-	<h1>Contents : <%=boardDTO.getContents() %></h1>
-	<% for(FileDTO file : ar){ %>
+	<h1>${requestScope.board}View</h1>
+	<h1>Title : ${dto.title}</h1>
+	<h1>Writer : ${requestScope.dto.writer}</h1>
+	<h1>Contents : ${requestScope.dto.contents}</h1>
+	
 	
 	<h3><a href="../upload/<%=file.getFname()%>"><%=file.getOname() %></a></h3>
-	<%} %>
+	<%}%>
 </div>
 
 <div class="container-fluid">
-	<a href="./<%=board %>List.do" class="btn btn-info">List</a>
-	<a href="./<%=board %>Update.do" class="btn btn-info">Update</a>
-	<a href="./<%=board %>Delete.do"class="btn btn-info">Delete</a>
+	<a href="./${requestScope.board}List.do" class="btn btn-info">List</a>
+	<a href="./${requestScope.board}Update.do?num=${dto.num}" class="btn btn-info">Update</a>
+	<a href="./${requestScope.board}Delete.do?num=${dto.num}"class="btn btn-info">Delete</a>
 </div>
 
 

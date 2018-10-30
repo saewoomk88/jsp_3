@@ -8,14 +8,8 @@
 <%@page import="com.iu.board.BoardDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
-<%
-	List<BoardDTO>ar=(List<BoardDTO>)request.getAttribute("list");
-	Pager pager = (Pager)request.getAttribute("pager");
-	String board = (String)request.getAttribute("board");
-
-	
-%>    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+ 
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,14 +19,15 @@
 </head>
 <body>
 <jsp:include page="../../../temp/header.jsp"></jsp:include>
+
 <div class="container-fluid">
 	<div class="row">
-		<h1><%=board %></h1>
+		<h1>${board}</h1>
 	</div>
 	<div class="row">
 		
 		<div>
-		<form class="form-inline" action="./<%=board%>List.do">
+		<form class="form-inline" action="./${board}List.do">
 	    <div class="form-group">
 	    	<div class="form-group">
 			  <label for="sel1">Select list:</label>
@@ -56,42 +51,47 @@
 				<td>DATE</td>
 				<td>HIT</td>
 			</tr>
-			<%for(BoardDTO boardDTO:ar){ %>
+			<c:forEach items="${list}" var="boardDTO">
+			
 			<tr>
-				<td><%=boardDTO.getNum() %></td>
+				<td>${boardDTO.num}</td>
 				<td>
 				
-				<a href="./<%=board%>SelectOne.do?num=<%=boardDTO.getNum()%>">
-				<%
-				try{
-				QnaDTO qnaDTO = (QnaDTO)boardDTO;
-				for(int i=0;i<qnaDTO.getDepth();i++){%>
-				--
-				<%}
-				}catch(Exception e){}%>
-				<%=boardDTO.getTitle() %></a></td>
-				<td><%=boardDTO.getWriter() %></td>
-				<td><%=boardDTO.getReg_date() %></td>
-				<td><%=boardDTO.getHit() %></td>
+				<a href="./${board}SelectOne.do?num=${boardDTO.num}">
+				<c:catch>
+					<c:forEach begin="0" end="${boardDTO.depth-1}">
+						--
+					</c:forEach>
+				</c:catch>
+				
+				%{boardDTO.title}</a></td>
+				<td>${boardDTO.writer}</td>
+				<td>${boardDTO.reg_date}</td>
+				<td>${boardDTO.hit}</td>
 				
 			</tr>
-			<%} %>
+			</c:forEach>
+			
 		</table>
 		
 		<div class="container-fluid">
    <div class="row">
 	  <ul class="pagination">
-	  	<li><a href="./<%=board%>List.do?curPage=<%=1%>"><span class="glyphicon glyphicon-backward"></span></a></li>
-	  <%if(pager.getCurBlock()>1){ %>
-	  	<li><a href="./<%=board%>List.do?curPage=<%=pager.getStartNum()-1%>"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-	   <%} %> 
-	    <%for(int i=pager.getStartNum();i<=pager.getLastNum();i++){ %>
-	    	<li><a href="./<%=board%>List.do?curPage=<%=i%>"><%=i %></a></li>
-	    <%} %>
-	    <%if(pager.getCurBlock() !=pager.getTotalBlock()){ %>
-	    <li><a href="./<%=board%>List.do?curPage=<%=pager.getLastNum()+1%>"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-	  	<%} %>
-	  	<li><a href="./<%=board%>List.do?curPage=<%=pager.getTotalPage()%>"><span class="glyphicon glyphicon-forward"></span></a></li>
+	  	<li><a href="./${board}List.do?curPage=<%=1%>"><span class="glyphicon glyphicon-backward"></span></a></li>
+	  	
+	  	<c:if test="${pager.curBlock>1}">
+	  		<li><a href="./${board}List.do?curPage=${pager.startNum-1}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+	  	</c:if>
+	  	
+	 	<c:forEach begin="${pager.startNum}" end="${pager.lastNum}" var="i">
+	    	<li><a href="./${board}List.do?curPage=${i}">${i }</a></li>
+	 	</c:forEach>
+	    
+	    
+	    <c:if test="${pager.curBlock < pager.totalBlock}">
+	    	<li><a href="./${board}List.do?curPage=${pager.lastNum+1}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+	    </c:if>
+	  	<li><a href="./${board}List.do?curPage=${pager.totalPage}"><span class="glyphicon glyphicon-forward"></span></a></li>
 	  </ul>
    </div>               
 </div>
@@ -105,7 +105,7 @@
 		<div class="row">
 			<div class="col-2">
 			
-	  			<a href="<%=board%>Write.do" class="btn btn-info btn-block">Write</a>
+	  			<a href="${board}Write.do" class="btn btn-info btn-block">Write</a>
 	
 			</div>
 	
@@ -114,6 +114,6 @@
 
 
 <jsp:include page="../../../temp/footer.jsp"></jsp:include>
-
+<c:import url="../../../temp/footer.jsp"></c:import>
 </body>
 </html>
