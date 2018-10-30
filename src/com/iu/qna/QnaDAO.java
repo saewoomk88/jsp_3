@@ -1,62 +1,125 @@
 package com.iu.qna;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 
-import com.iu.board.BoardDAO;
-import com.iu.board.BoardDTO;
-import com.iu.board.BoardReply;
-import com.iu.board.BoardReplyDTO;
-import com.iu.page.RowNumber;
-import com.iu.page.Search;
+import com.iu.util.DBControl;
 
-public class QnaDAO implements BoardDAO, BoardReply {
+public class QnaDAO {
 	
-	@Override
-	public int reply(BoardReplyDTO boardReplyDTO) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+	public int reply(QnaDTO qnaDTO) throws Exception{
+		Connection con = DBControl.getconnect();
+		String sql = "insert into qna values(qna_seq.nextval,?,?,?,sysdate,0,?,?,?)";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setString(1, qnaDTO.getTitle());
+		st.setString(2, qnaDTO.getContents());
+		st.setString(3, qnaDTO.getWriter());
+		st.setInt(4, qnaDTO.getRef());
+		st.setInt(5, qnaDTO.getStep());
+		st.setInt(6, qnaDTO.getDepth());
+		int result = st.executeUpdate();
+		DBControl.disconnect(st, con);
+		return result;
 	}
 	
-	@Override
-	public int replyUpdate(BoardReplyDTO boardReplyDTO) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+	public int stepUpdate(QnaDTO parent) throws Exception {
+		Connection con = DBControl.getconnect();
+		String sql = "update qna set step=step+1 where ref=? and step>?";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setInt(1, parent.getRef());
+		st.setInt(2, parent.getStep());
+		int result = st.executeUpdate();
+		
+		DBControl.disconnect(st, con);
+		return result;
+		
 	}
-
-	@Override
-	public List<BoardDTO> selectList(RowNumber rowNumber) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	
+	
+	public QnaDTO selectOne(int num) throws Exception{
+		Connection con = DBControl.getconnect();
+		String sql = "select * from qna where num=?";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setInt(1, num);
+		ResultSet rs = st.executeQuery();
+		QnaDTO qnaDTO = null;
+		if(rs.next()) {
+			qnaDTO = new QnaDTO();
+			qnaDTO.setNum(rs.getInt("num"));
+			qnaDTO.setTitle(rs.getString("title"));
+			qnaDTO.setContents(rs.getString("contents"));
+			qnaDTO.setWriter(rs.getString("writer"));
+			qnaDTO.setReg_date(rs.getDate("reg_date"));
+			qnaDTO.setHit(rs.getInt("hit"));
+			qnaDTO.setRef(rs.getInt("ref"));
+			qnaDTO.setStep(rs.getInt("step"));
+			qnaDTO.setDepth(rs.getInt("depth"));
+		}
+		DBControl.disconnect(rs, st, con);
+		return qnaDTO;
 	}
-
-	@Override
-	public BoardDTO selectOne(int num) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public int insert(QnaDTO qnaDTO) throws Exception {
+		Connection con = DBControl.getconnect();
+		String sql = "insert into qna values(qna_seq.nextval,?,?,?,sysdate,0,qna_seq.currval,0,0)";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setString(1, qnaDTO.getTitle());
+		st.setString(2, qnaDTO.getContents());
+		st.setString(3, qnaDTO.getWriter());
+		int result = st.executeUpdate();
+		DBControl.disconnect(st, con);
+		return result;
 	}
-
-	@Override
-	public int insert(BoardDTO boardDTO) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+	
+	public int getCount(String kind, String search) throws Exception{
+		Connection con = DBControl.getconnect();
+		String sql = "select count(num) from qna "
+				+ "where "+kind+" like ?";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setString(1, "%"+search+"%");
+		ResultSet rs = st.executeQuery();
+		rs.next();
+		int result =rs.getInt(1);
+		
+		DBControl.disconnect(rs, st, con);
+		return result;
+		
 	}
-
-	@Override
-	public int update(BoardDTO boardDTO) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int delete(int num) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getCount(Search	search) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+	
+	//selectList
+	public ArrayList<QnaDTO> selectList (int startRow, int lastRow, String kind, String search) throws Exception{
+		Connection con = DBControl.getconnect();
+		String sql = "select * from "
+				+ "(select rownum R, N.* from "
+				+ "(select * from qna where "+kind+" like ? order by ref desc, step asc) N) "
+						+ "where R between ? and ?";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setString(1, "%"+search+"%");
+		st.setInt(2, startRow);
+		st.setInt(3, lastRow);
+		
+		ResultSet rs = st.executeQuery();
+		ArrayList<QnaDTO> ar = new ArrayList<>();
+		QnaDTO qnaDTO = null;
+		while(rs.next()) {
+			qnaDTO= new QnaDTO();
+			qnaDTO.setNum(rs.getInt("num"));
+			qnaDTO.setTitle(rs.getString("title"));
+			qnaDTO.setWriter(rs.getString("writer"));
+			qnaDTO.setReg_date(rs.getDate("reg_date"));
+			qnaDTO.setHit(rs.getInt("hit"));
+			qnaDTO.setDepth(rs.getInt("depth"));
+			
+			ar.add(qnaDTO);
+			
+			
+		}
+		DBControl.disconnect(rs, st, con);
+		return ar;
+		
+		
 	}
 
 }
