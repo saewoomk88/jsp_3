@@ -104,6 +104,13 @@ public class NoticeDAO implements BoardDAO{
 
 	@Override
 	public int update(BoardDTO boardDTO) throws Exception {
+		Connection con = DBControl.getconnect();
+		String sql = "update notice set title=?, contents=? where num=?";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setString(1, boardDTO.getTitle());
+		st.setString(2, boardDTO.getContents());
+		st.setInt(3, boardDTO.getNum());
+		
 		
 		return 0;
 	}

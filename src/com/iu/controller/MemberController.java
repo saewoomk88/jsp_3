@@ -10,20 +10,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.iu.action.ActionFoward;
-import com.iu.notice.NoticeService;
+import com.iu.member.MemberService;
 
 /**
- * Servlet implementation class NoticeController
+ * Servlet implementation class MemberController
  */
-@WebServlet("/NoticeController")
-public class NoticeController extends HttpServlet {
+@WebServlet("/MemberController")
+public class MemberController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+     private MemberService memberService;  
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NoticeController() {
+    public MemberController() {
         super();
+        memberService = new MemberService();
         // TODO Auto-generated constructor stub
     }
 
@@ -33,28 +34,26 @@ public class NoticeController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("utf-8");
 		response.setCharacterEncoding("utf-8");
+		
 		String command = request.getPathInfo();
 		ActionFoward actionFoward = null;
-		NoticeService noticeService = new NoticeService();
-		if(command.equals("/noticeList.do")) {
-			actionFoward = noticeService.selectList(request, response);
-		}else if(command.equals("/noticeSelectOne.do")) {
-			actionFoward = noticeService.selectOne(request, response);
-		}else if(command.equals("/noticeWrite.do")){
-			actionFoward = noticeService.insert(request, response);
-		}else if (command.equals("/noticeUpdate.do")) {
-			actionFoward = noticeService.update(request, response);
-		}else if (command.equals("/noticeDelete.do")) {
-			actionFoward = noticeService.delete(request, response);
+		
+		if(command.equals("/memberJoin.do")) {
+			actionFoward = memberService.join(request, response);
+		}else if(command.equals("/memberList.do")) {
+			actionFoward = new ActionFoward();
+			actionFoward.setCheck(true);
+			actionFoward.setPath("/);
 		}
 		
 		if(actionFoward.isCheck()) {
 			RequestDispatcher view = request.getRequestDispatcher(actionFoward.getPath());
 			view.forward(request, response);
-		}else if(command.equals("/noticeWrite.do")){
+		}else {
 			response.sendRedirect(actionFoward.getPath());
 		}
 	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */

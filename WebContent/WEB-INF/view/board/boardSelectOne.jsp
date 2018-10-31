@@ -18,14 +18,12 @@
 <jsp:include page="../../../temp/header.jsp"></jsp:include>
 <div class="container-fluid">
 	<div class="row"></div>
-	<h1>${requestScope.board}View</h1>
+	<h1>${board}View</h1>
 	<h1>Title : ${dto.title}</h1>
 	<h1>Writer : ${requestScope.dto.writer}</h1>
 	<h1>Contents : ${requestScope.dto.contents}</h1>
 	
 	
-	<h3><a href="../upload/<%=file.getFname()%>"><%=file.getOname() %></a></h3>
-	<%}%>
 </div>
 
 <div class="container-fluid">

@@ -18,9 +18,8 @@
 
 <jsp:include page="../../../temp/header.jsp"></jsp:include>
 
-<div class="container">
-  <h2>Vertical (basic) form</h2>
-  <form action="<%=board %>Write.do" method="post" enctype="multipart/form-data">
+<div class="container-fluid">
+   <form action="<%=board %>Write.do" method="post" enctype="multipart/form-data">
    <div class="form-group">
       <label for="title">Title:</label>
       <input type="text" multiple class="form-control" id="title" placeholder="Enter title" name="title">

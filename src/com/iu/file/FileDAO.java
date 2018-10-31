@@ -10,6 +10,14 @@ import com.iu.util.DBControl;
 
 public class FileDAO {
 	
+public int deleteAll(int num) throws Exception{
+		Connection con = DBControl.getconnect();
+		String sql = "delete upload where num=?";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setInt(1, num);
+		
+	}
+	
 	public List<FileDTO> selectList(FileDTO fileDTO) throws Exception{
 		List<FileDTO> ar = new ArrayList<>();
 		Connection con = DBControl.getconnect();

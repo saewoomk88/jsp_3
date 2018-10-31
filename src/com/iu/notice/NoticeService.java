@@ -95,14 +95,57 @@ public class NoticeService implements BoardService{
 
 	@Override
 	public ActionFoward delete(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		return null;
+		ActionFoward actionFoward = new ActionFoward();
+		try {
+			int num = Integer.parseInt(request.getParameter("num"));
+			
+			num = noticeDAO.delete(num);
+			if(num>0) {
+				request.setAttribute("message", "S");
+				request.setAttribute("path", "");
+			}else {
+				request.setAttribute("message", "F");
+				request.setAttribute("path", "");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		actionFoward.setCheck(true);
+		actionFoward.setPath("../WEB-INF/view/common/result.jsp");
+		
+		return actionFoward;
 	}
 
 	@Override
 	public ActionFoward update(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		return null;
+		ActionFoward actionFoward = new ActionFoward();
+		String method = request.getMethod();
+		if(method.equals("POST")) {
+			
+		}else {
+			try {
+			int num = Integer.parseInt(request.getParameter("num"));
+			BoardDTO boardDTO = noticeDAO.selectOne(num);
+			FileDAO fileDAO = new FileDAO();
+			FileDTO fileDTO = new FileDTO();
+			fileDTO.setNum(num);
+			fileDTO.setKind("N");
+			List<FileDTO> ar = fileDAO.selectList(fileDTO);
+			request.setAttribute("dto", boardDTO);
+			request.setAttribute("ar", ar);
+			request.setAttribute("board", "notice");
+			actionFoward.setCheck(true);
+			actionFoward.setPath("../WEB-INF/view/board/boardUpdate.jsp");
+			}catch(Exception e) {
+				
+			}
+		}
+		
+		
+		
+		
+		return actionFoward;
 	}
 
 	@Override
@@ -152,7 +195,7 @@ public class NoticeService implements BoardService{
 				actionFoward.setPath("../WEB-INF/view/common/result.jsp");
 			}
 			}catch(Exception e) {
-				
+				e.printStackTrace();
 			}
 			
 			
@@ -163,7 +206,7 @@ public class NoticeService implements BoardService{
 		}else {
 			request.setAttribute("board", "notice");
 			actionFoward.setCheck(true);
-			actionFoward.setPath("../WEB-INF/view/board/boardList.jsp");
+			actionFoward.setPath("../WEB-INF/view/board/boardWrite.jsp");
 			
 		}
 		return actionFoward;
